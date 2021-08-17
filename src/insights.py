@@ -1,3 +1,11 @@
+from src.jobs import read
+
+
+def get_unique_key_values(key_name, dict):
+    unique_values = set(key[key_name] for key in dict if key[key_name])
+    return unique_values
+
+
 def get_unique_job_types(path):
     """Checks all different job types and returns a list of them
 
@@ -13,7 +21,10 @@ def get_unique_job_types(path):
     list
         List of unique job types
     """
-    return []
+
+    jobs_dict = read(path)
+    unique_job_types = get_unique_key_values("job_type", jobs_dict)
+    return unique_job_types
 
 
 def filter_by_job_type(jobs, job_type):
@@ -49,7 +60,10 @@ def get_unique_industries(path):
     list
         List of unique industries
     """
-    return []
+
+    jobs_dict = read(path)
+    unique_industries = get_unique_key_values("industry", jobs_dict)
+    return unique_industries
 
 
 def filter_by_industry(jobs, industry):
