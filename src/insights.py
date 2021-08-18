@@ -1,9 +1,5 @@
 from src.jobs import read
-
-
-def get_unique_key_values(key_name, dict):
-    unique_values = set(key[key_name] for key in dict if key[key_name])
-    return unique_values
+from src.utils import get_unique_key_values
 
 
 def get_unique_job_types(path):
@@ -42,7 +38,9 @@ def filter_by_job_type(jobs, job_type):
     list
         List of jobs with provided job_type
     """
-    return []
+
+    filtered_jobs = list(filter(lambda job: job["job_type"] in job_type, jobs))
+    return filtered_jobs
 
 
 def get_unique_industries(path):
@@ -81,7 +79,10 @@ def filter_by_industry(jobs, industry):
     list
         List of jobs with provided industry
     """
-    return []
+    filtered_industries = list(
+        filter(lambda job: job["industry"] in industry, jobs)
+    )
+    return filtered_industries
 
 
 def get_max_salary(path):
