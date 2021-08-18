@@ -19,7 +19,9 @@ def get_unique_job_types(path):
     """
 
     jobs_dict = read(path)
+
     unique_job_types = get_unique_key_values("job_type", jobs_dict)
+
     return unique_job_types
 
 
@@ -39,8 +41,11 @@ def filter_by_job_type(jobs, job_type):
         List of jobs with provided job_type
     """
 
-    filtered_jobs = list(filter(lambda job: job["job_type"] in job_type, jobs))
-    return filtered_jobs
+    filtered_jobs_by_type = list(
+        filter(lambda job: job["job_type"] in job_type, jobs)
+    )
+
+    return filtered_jobs_by_type
 
 
 def get_unique_industries(path):
@@ -60,7 +65,9 @@ def get_unique_industries(path):
     """
 
     jobs_dict = read(path)
+
     unique_industries = get_unique_key_values("industry", jobs_dict)
+
     return unique_industries
 
 
@@ -79,10 +86,11 @@ def filter_by_industry(jobs, industry):
     list
         List of jobs with provided industry
     """
-    filtered_industries = list(
+    filtered_jobs_by_industry = list(
         filter(lambda job: job["industry"] in industry, jobs)
     )
-    return filtered_industries
+
+    return filtered_jobs_by_industry
 
 
 def get_max_salary(path):
@@ -102,11 +110,15 @@ def get_max_salary(path):
     """
 
     jobs_dict = read(path)
+
     unique_salaries = get_unique_key_values("max_salary", jobs_dict)
+
     salaries_to_int = [
         int(salary) for salary in unique_salaries if salary.isdigit()
     ]
+
     max_salary = max(salaries_to_int)
+
     return max_salary
 
 
@@ -126,11 +138,15 @@ def get_min_salary(path):
         The minimum salary paid out of all job opportunities
     """
     jobs_dict = read(path)
+
     unique_salaries = get_unique_key_values("min_salary", jobs_dict)
+
     salaries_to_int = [
         int(salary) for salary in unique_salaries if salary.isdigit()
     ]
+
     min_salary = min(salaries_to_int)
+
     return min_salary
 
 
@@ -157,7 +173,24 @@ def matches_salary_range(job, salary):
         If `job["min_salary"]` is greather than `job["max_salary"]`
         If `salary` isn't a valid integer
     """
-    pass
+    if not ("min_salary" in job and "max_salary" in job):
+        raise ValueError("min_salary and max_salary must be provided")
+
+    elif not (
+        isinstance(job["min_salary"], int)
+        and
+        isinstance(job["max_salary"], int)
+    ):
+        raise ValueError("min_salary and max_salary must be integers")
+
+    elif job["min_salary"] > job["max_salary"]:
+        raise ValueError("min_salary can't be greater than max_salary")
+
+    elif not isinstance(salary, int):
+        raise ValueError("salary must be an integer")
+
+    else:
+        return job["min_salary"] <= salary <= job["max_salary"]
 
 
 def filter_by_salary_range(jobs, salary):
@@ -175,4 +208,13 @@ def filter_by_salary_range(jobs, salary):
     list
         Jobs whose salary range contains `salary`
     """
-    return []
+    filtered_jobs_by_salary = []
+
+    for job in jobs:
+        try:
+            if matches_salary_range(job, salary):
+                filtered_jobs_by_salary.append(job)
+        except ValueError:
+            pass
+
+    return filtered_jobs_by_salary
